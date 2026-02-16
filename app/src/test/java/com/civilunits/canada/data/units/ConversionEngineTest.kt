@@ -124,4 +124,98 @@ class ConversionEngineTest {
         val result = convert(convert(-40.0, from, to), to, from)
         assertEquals(-40.0, result, 0.0001)
     }
+
+    // ── Area ──
+
+    @Test
+    fun `m2 to ft2`() {
+        assertConversion("area", "m2", "ft2", 1.0, 10.7639, 0.01)
+    }
+
+    @Test
+    fun `acre to hectare`() {
+        assertConversion("area", "acre", "hectare", 1.0, 0.4047, 0.001)
+    }
+
+    // ── Volume ──
+
+    @Test
+    fun `L to US gal`() {
+        assertConversion("volume", "L", "usgal", 1.0, 0.26417, 0.001)
+    }
+
+    @Test
+    fun `ft3 to L`() {
+        assertConversion("volume", "ft3", "L", 1.0, 28.3168, 0.01)
+    }
+
+    // ── Mass ──
+
+    @Test
+    fun `kg to lb`() {
+        assertConversion("mass", "kg", "lb", 1.0, 2.20462, 0.001)
+    }
+
+    @Test
+    fun `tonne to US ton`() {
+        assertConversion("mass", "tonne", "uston", 1.0, 1.10231, 0.001)
+    }
+
+    // ── Identity (same-unit) ──
+
+    @Test
+    fun `m to m identity`() {
+        assertConversion("length", "m", "m", 42.0, 42.0, 0.0)
+    }
+
+    @Test
+    fun `Pa to Pa identity`() {
+        assertConversion("pressure", "Pa", "Pa", 100.0, 100.0, 0.0)
+    }
+
+    // ── Zero ──
+
+    @Test
+    fun `0 mm to 0 in`() {
+        assertConversion("length", "mm", "in", 0.0, 0.0, 0.0)
+    }
+
+    @Test
+    fun `0 C to 32 F`() {
+        assertConversion("temperature", "C", "F", 0.0, 32.0, 0.01)
+    }
+
+    // ── Negative ──
+
+    @Test
+    fun `minus 40 C to minus 40 F`() {
+        assertConversion("temperature", "C", "F", -40.0, -40.0, 0.01)
+    }
+
+    @Test
+    fun `negative kN to lbf`() {
+        assertConversion("force", "kN", "lbf", -5.0, -1124.045, 0.01)
+    }
+
+    // ── Slope ──
+
+    @Test
+    fun `45 degrees to 100 percent`() {
+        assertConversion("slope", "degrees", "percent", 45.0, 100.0, 0.01)
+    }
+
+    @Test
+    fun `100 percent to ratio 1`() {
+        assertConversion("slope", "percent", "ratio", 100.0, 1.0, 0.0001)
+    }
+
+    // ── Round-trip ──
+
+    @Test
+    fun `round trip kg to lb`() {
+        val from = unit("mass", "kg")
+        val to = unit("mass", "lb")
+        val result = convert(convert(75.0, from, to), to, from)
+        assertEquals(75.0, result, 0.0001)
+    }
 }

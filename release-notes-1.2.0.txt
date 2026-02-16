@@ -1,0 +1,12 @@
+v1.2.0 — Dark Mode, More Tests, Performance
+
+New:
+- Dark mode toggle: choose System, Light, or Dark from the new Settings screen
+- Settings screen accessible via gear icon on the Categories page
+- Precision and gallon preferences moved to Settings for easier access
+
+Improved:
+- Fixed coroutine leak when switching units in the converter
+- Cached unit lookups in Quick Civil for faster conversions
+- Removed dead code in number formatter
+- Added 31 new unit tests (58 total) covering formatting, area, volume, mass, slope, and edge cases

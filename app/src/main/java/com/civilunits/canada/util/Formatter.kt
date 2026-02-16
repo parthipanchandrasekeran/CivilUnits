@@ -37,7 +37,7 @@ object Formatter {
     }
 
     private fun formatFixed(value: Double, decimals: Int): String {
-        val pattern = "0." + "#".repeat(0) + "0".repeat(decimals)
+        val pattern = "0." + "0".repeat(decimals)
         val df = DecimalFormat(pattern)
         df.roundingMode = RoundingMode.HALF_UP
         return df.format(value)

@@ -51,6 +51,7 @@ class ConverterViewModel @Inject constructor(
     val uiState: StateFlow<ConverterUiState> = _uiState.asStateFlow()
 
     private var historyJob: Job? = null
+    private var favoriteJob: Job? = null
 
     init {
         val category = unitRepository.getCategoryById(categoryId)
@@ -78,7 +79,8 @@ class ConverterViewModel @Inject constructor(
     }
 
     private fun observeFavoriteStatus() {
-        viewModelScope.launch {
+        favoriteJob?.cancel()
+        favoriteJob = viewModelScope.launch {
             val state = _uiState.value
             val from = state.fromUnit ?: return@launch
             val to = state.toUnit ?: return@launch

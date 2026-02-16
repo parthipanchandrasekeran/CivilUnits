@@ -6,6 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.civilunits.canada.data.model.ThemeMode
+import com.civilunits.canada.data.repository.PreferencesRepository
 import com.civilunits.canada.navigation.AppNavGraph
 import com.civilunits.canada.ui.theme.CivilUnitsTheme
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -15,9 +20,12 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var preferencesRepository: PreferencesRepository
 
     private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
 
@@ -39,7 +47,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CivilUnitsTheme {
+            val themeMode by preferencesRepository.themeMode
+                .collectAsState(initial = ThemeMode.System)
+            val darkTheme = when (themeMode) {
+                ThemeMode.System -> isSystemInDarkTheme()
+                ThemeMode.Light -> false
+                ThemeMode.Dark -> true
+            }
+            CivilUnitsTheme(darkTheme = darkTheme) {
                 AppNavGraph()
             }
         }

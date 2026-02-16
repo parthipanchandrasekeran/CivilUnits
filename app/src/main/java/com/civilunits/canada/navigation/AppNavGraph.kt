@@ -26,6 +26,7 @@ import com.civilunits.canada.ui.converter.ConverterScreen
 import com.civilunits.canada.ui.favorites.FavoritesScreen
 import com.civilunits.canada.ui.history.HistoryScreen
 import com.civilunits.canada.ui.quickcivil.QuickCivilScreen
+import com.civilunits.canada.ui.settings.SettingsScreen
 
 data class BottomNavItem(
     val route: String,
@@ -83,7 +84,16 @@ fun AppNavGraph() {
                 CategoriesScreen(
                     onCategoryClick = { categoryId ->
                         navController.navigate("converter/$categoryId")
+                    },
+                    onSettingsClick = {
+                        navController.navigate(Route.Settings.route)
                     }
+                )
+            }
+
+            composable(Route.Settings.route) {
+                SettingsScreen(
+                    onBack = { navController.popBackStack() }
                 )
             }
 

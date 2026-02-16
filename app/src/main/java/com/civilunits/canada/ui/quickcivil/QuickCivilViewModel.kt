@@ -3,6 +3,7 @@ package com.civilunits.canada.ui.quickcivil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.civilunits.canada.data.model.PrecisionMode
+import com.civilunits.canada.data.model.UnitDef
 import com.civilunits.canada.data.model.convert
 import com.civilunits.canada.data.repository.PreferencesRepository
 import com.civilunits.canada.data.repository.UnitRepository
@@ -51,6 +52,16 @@ class QuickCivilViewModel @Inject constructor(
 
     private var precisionMode: PrecisionMode = PrecisionMode.Auto
 
+    // Cache unit lookups — default pairs are static
+    private val unitCache: Map<Pair<String, String>, UnitDef> = buildMap {
+        for (pair in DEFAULT_PAIRS) {
+            val fromKey = pair.categoryId to pair.fromId
+            val toKey = pair.categoryId to pair.toId
+            if (fromKey !in this) unitRepository.getUnit(pair.categoryId, pair.fromId)?.let { put(fromKey, it) }
+            if (toKey !in this) unitRepository.getUnit(pair.categoryId, pair.toId)?.let { put(toKey, it) }
+        }
+    }
+
     private val _conversions = MutableStateFlow(
         DEFAULT_PAIRS.map { QuickConversionState(pair = it) }
     )
@@ -76,18 +87,21 @@ class QuickCivilViewModel @Inject constructor(
 
     fun onInputChange(index: Int, text: String) {
         _conversions.update { list ->
-            list.toMutableList().also { mutable ->
-                val current = mutable[index]
-                val result = performConversion(current.pair, text)
-                mutable[index] = current.copy(inputText = text, resultText = result)
+            List(list.size) { i ->
+                if (i == index) {
+                    val result = performConversion(list[i].pair, text)
+                    list[i].copy(inputText = text, resultText = result)
+                } else {
+                    list[i]
+                }
             }
         }
     }
 
     private fun performConversion(pair: QuickPair, inputText: String): String {
         val input = inputText.toDoubleOrNull() ?: return ""
-        val fromUnit = unitRepository.getUnit(pair.categoryId, pair.fromId) ?: return ""
-        val toUnit = unitRepository.getUnit(pair.categoryId, pair.toId) ?: return ""
+        val fromUnit = unitCache[pair.categoryId to pair.fromId] ?: return ""
+        val toUnit = unitCache[pair.categoryId to pair.toId] ?: return ""
         val result = convert(input, fromUnit, toUnit)
         return Formatter.formatResult(result, precisionMode)
     }

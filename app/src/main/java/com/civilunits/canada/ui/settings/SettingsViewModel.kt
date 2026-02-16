@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.civilunits.canada.data.model.GallonMode
 import com.civilunits.canada.data.model.PrecisionMode
+import com.civilunits.canada.data.model.ThemeMode
 import com.civilunits.canada.data.repository.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,14 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
+
+    val themeMode: StateFlow<ThemeMode> =
+        preferencesRepository.themeMode
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = ThemeMode.System
+            )
 
     val precisionMode: StateFlow<PrecisionMode> =
         preferencesRepository.precisionMode
@@ -42,6 +51,12 @@ class SettingsViewModel @Inject constructor(
     fun setGallonMode(mode: GallonMode) {
         viewModelScope.launch {
             preferencesRepository.setGallonMode(mode)
+        }
+    }
+
+    fun setThemeMode(mode: ThemeMode) {
+        viewModelScope.launch {
+            preferencesRepository.setThemeMode(mode)
         }
     }
 }

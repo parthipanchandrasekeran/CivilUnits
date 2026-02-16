@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.civilunits.canada.data.model.GallonMode
 import com.civilunits.canada.data.model.PrecisionMode
+import com.civilunits.canada.data.model.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -19,6 +20,7 @@ class PreferencesRepository @Inject constructor(
         val KEY_PRECISION_MODE = stringPreferencesKey("precision_mode")
         val KEY_GALLON_MODE = stringPreferencesKey("gallon_mode")
         val KEY_DEFAULT_CATEGORY = stringPreferencesKey("default_category_id")
+        val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     val precisionMode: Flow<PrecisionMode> = dataStore.data.map { prefs ->
@@ -33,6 +35,12 @@ class PreferencesRepository @Inject constructor(
         } ?: GallonMode.US
     }
 
+    val themeMode: Flow<ThemeMode> = dataStore.data.map { prefs ->
+        prefs[KEY_THEME_MODE]?.let { name ->
+            ThemeMode.entries.firstOrNull { it.name == name }
+        } ?: ThemeMode.System
+    }
+
     val defaultCategoryId: Flow<String?> = dataStore.data.map { prefs ->
         prefs[KEY_DEFAULT_CATEGORY]
     }
@@ -40,6 +48,12 @@ class PreferencesRepository @Inject constructor(
     suspend fun setPrecisionMode(mode: PrecisionMode) {
         dataStore.edit { prefs ->
             prefs[KEY_PRECISION_MODE] = mode.name
+        }
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        dataStore.edit { prefs ->
+            prefs[KEY_THEME_MODE] = mode.name
         }
     }
 
