@@ -1,6 +1,8 @@
 package com.civilunits.canada.ui.favorites
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -33,38 +37,58 @@ fun FavoritesScreen(
     val favorites by viewModel.favorites.collectAsState()
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
-                .widthIn(max = 600.dp)
+                .widthIn(max = 680.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = "Favorites",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+            )
+            Text(
+                text = "Your most-used conversion pairs",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             if (favorites.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(32.dp),
+                        .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "No favorites yet",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = "No favorites yet",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Tap the star in Converter to save frequent unit pairs.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(
                         items = favorites,
                         key = { it.id }
@@ -93,26 +117,32 @@ private fun FavoriteItem(
     val toName = viewModel.getUnitDisplayName(favorite.categoryId, favorite.toUnitId)
     val categoryName = favorite.categoryId.replaceFirstChar { it.uppercase() }
 
-    ListItem(
-        modifier = Modifier.clickable(onClick = onClick),
-        overlineContent = {
-            Text(
-                text = categoryName,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-        },
-        headlineContent = {
-            Text(text = "$fromName \u2192 $toName")
-        },
-        trailingContent = {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Remove favorite",
-                    tint = MaterialTheme.colorScheme.error
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+            .clickable(onClick = onClick)
+    ) {
+        ListItem(
+            overlineContent = {
+                Text(
+                    text = categoryName,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
+            },
+            headlineContent = {
+                Text(text = "$fromName → $toName")
+            },
+            trailingContent = {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Remove favorite",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
-        }
-    )
+        )
+    }
 }

@@ -1,5 +1,6 @@
 package com.civilunits.canada.ui.civiltools
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,12 +48,19 @@ fun RebarScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
     ) {
         Text(
             text = "Rebar Reference",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+        )
+        Text(
+            text = "Quick lookup for US and metric bar sizes",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 12.dp)
         )
 
         OutlinedTextField(

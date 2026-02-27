@@ -1,5 +1,6 @@
 package com.civilunits.canada.ui.categories
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,13 +23,13 @@ import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.RotateRight
 import androidx.compose.material.icons.filled.Scale
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.TrendingUp
-import androidx.compose.material.icons.filled.Waves
 import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Waves
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,29 +55,36 @@ fun CategoriesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 16.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 12.dp),
+                .padding(top = 16.dp, bottom = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Categories",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    Icons.Filled.Settings,
-                    contentDescription = "Settings"
+            Column {
+                Text(
+                    text = "Civil Units",
+                    style = MaterialTheme.typography.headlineMedium
                 )
+                Text(
+                    text = "Fast conversions for field and office",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onSettingsClick) {
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 150.dp),
+            columns = GridCells.Adaptive(minSize = 156.dp),
             contentPadding = PaddingValues(bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -110,14 +118,20 @@ private fun CategoryCard(
             Icon(
                 imageVector = mapCategoryIcon(category.iconName),
                 contentDescription = category.name,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = category.name,
                 style = MaterialTheme.typography.titleSmall,
                 textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Open",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
             )
         }
     }

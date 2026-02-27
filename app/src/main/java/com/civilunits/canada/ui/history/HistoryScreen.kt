@@ -1,8 +1,11 @@
 package com.civilunits.canada.ui.history
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,16 +14,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.civilunits.canada.data.model.ConversionHistory
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
     onEntryClick: (String) -> Unit,
@@ -65,62 +66,76 @@ fun HistoryScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("History") },
-                actions = {
-                    if (history.isNotEmpty()) {
-                        TextButton(onClick = { showClearDialog = true }) {
-                            Text(
-                                text = "Clear All",
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = 680.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(text = "History", style = MaterialTheme.typography.headlineMedium)
+                    Text(
+                        text = "Recent conversions across all categories",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (history.isNotEmpty()) {
+                    TextButton(onClick = { showClearDialog = true }) {
+                        Text(text = "Clear", color = MaterialTheme.colorScheme.error)
                     }
                 }
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = 600.dp)
-                    .fillMaxWidth()
-            ) {
-                if (history.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(32.dp),
-                        contentAlignment = Alignment.Center
+            }
+
+            if (history.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        Icon(
+                            imageVector = Icons.Filled.History,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(text = "No history yet", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            text = "No history yet",
-                            style = MaterialTheme.typography.bodyLarge,
+                            text = "Your conversions will appear here automatically.",
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(
-                            items = history,
-                            key = { it.id }
-                        ) { entry ->
-                            HistoryItem(
-                                entry = entry,
-                                viewModel = viewModel,
-                                onClick = { onEntryClick(entry.categoryId) },
-                                onDelete = { viewModel.deleteEntry(entry.id) }
-                            )
-                        }
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(
+                        items = history,
+                        key = { it.id }
+                    ) { entry ->
+                        HistoryItem(
+                            entry = entry,
+                            viewModel = viewModel,
+                            onClick = { onEntryClick(entry.categoryId) },
+                            onDelete = { viewModel.deleteEntry(entry.id) }
+                        )
                     }
                 }
             }
@@ -140,28 +155,34 @@ private fun HistoryItem(
     val categoryName = entry.categoryId.replaceFirstChar { it.uppercase() }
     val relativeTime = formatRelativeTime(entry.timestamp)
 
-    ListItem(
-        modifier = Modifier.clickable(onClick = onClick),
-        headlineContent = {
-            Text(text = "${entry.inputValue} $fromName = ${entry.outputValue} $toName")
-        },
-        supportingContent = {
-            Text(
-                text = "$categoryName \u2022 $relativeTime",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        trailingContent = {
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Delete entry",
-                    tint = MaterialTheme.colorScheme.error
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+            .clickable(onClick = onClick)
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(text = "${entry.inputValue} $fromName = ${entry.outputValue} $toName")
+            },
+            supportingContent = {
+                Text(
+                    text = "$categoryName • $relativeTime",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            },
+            trailingContent = {
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Delete entry",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 private fun formatRelativeTime(timestamp: Long): String {
