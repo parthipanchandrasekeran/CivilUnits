@@ -7,7 +7,11 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -42,7 +46,6 @@ val bottomNavItems = listOf(
     BottomNavItem(Route.History.route, "History", Icons.Default.History)
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
@@ -56,10 +59,11 @@ fun AppNavGraph() {
             if (showBottomBar) {
                 NavigationBar {
                     bottomNavItems.forEach { item ->
+                        val isSelected = currentDestination?.hierarchy?.any { it.route == item.route } == true
                         NavigationBarItem(
                             icon = { Icon(item.icon, contentDescription = item.label) },
                             label = { Text(item.label) },
-                            selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                            selected = isSelected,
                             onClick = {
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
@@ -92,9 +96,7 @@ fun AppNavGraph() {
             }
 
             composable(Route.Settings.route) {
-                SettingsScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                SettingsScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Route.QuickCivil.route) {
@@ -129,9 +131,7 @@ fun AppNavGraph() {
                     }
                 )
             ) {
-                ConverterScreen(
-                    onBack = { navController.popBackStack() }
-                )
+                ConverterScreen(onBack = { navController.popBackStack() })
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.civilunits.canada.ui.quickcivil
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,24 +34,30 @@ fun QuickCivilScreen(
     val conversions by viewModel.conversions.collectAsState()
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
-                .widthIn(max = 600.dp)
+                .widthIn(max = 680.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = "Quick Civil",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+            )
+            Text(
+                text = "Most-used site conversions in one place",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(conversions) { index, conversion ->
                     QuickConversionCard(
                         state = conversion,
@@ -69,9 +75,7 @@ private fun QuickConversionCard(
     state: QuickConversionState,
     onInputChange: (String) -> Unit
 ) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,13 +104,7 @@ private fun QuickConversionCard(
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
-
-                Text(
-                    text = "=",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-
+                Text(text = "=", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.width(12.dp))
 
                 OutlinedTextField(
